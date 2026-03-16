@@ -5,10 +5,12 @@ import { UserButton } from '@clerk/nextjs'
 import Sidebar from '@/components/Sidebar'
 import Editor from '@/components/Editor'
 import LinksPanel from '@/components/LinksPanel'
+import GraphView from '@/components/GraphView'
 
 export default function NotesPage() {
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null)
   const [isLinking, setIsLinking] = useState(false)
+  const [showGraph, setShowGraph] = useState(false)
 
   // Triggered by Editor after 3s of inactivity
   const handleTriggerLink = async (noteId: string) => {
@@ -57,7 +59,13 @@ export default function NotesPage() {
               AI Analyzing...
             </span>
           )}
-          {/* Future Graph View toggle will go here */}
+          <button
+            onClick={() => setShowGraph(true)}
+            className="px-3 py-1.5 text-xs font-medium text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 rounded-full hover:bg-indigo-500/20 transition-colors flex items-center gap-1.5"
+            title="Open Graph View"
+          >
+            <span>🕸️</span> Graph
+          </button>
           <UserButton
             appearance={{
               elements: { userButtonAvatarBox: 'w-8 h-8' }
@@ -75,6 +83,17 @@ export default function NotesPage() {
 
       {/* 3. Neural Links - Right Panel */}
       <LinksPanel noteId={selectedNoteId} onSelectNote={setSelectedNoteId} />
+
+      {/* 4. Fullscreen Graph View Overlay */}
+      {showGraph && (
+        <GraphView
+          onSelectNote={(id) => {
+            setSelectedNoteId(id)
+            setShowGraph(false)
+          }}
+          onClose={() => setShowGraph(false)}
+        />
+      )}
     </main>
   )
 }
