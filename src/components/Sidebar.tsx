@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { supabase, type Note } from '@/lib/supabase'
+import { type Note } from '@/lib/supabase'
 import { useUser } from '@clerk/nextjs'
+import { getNotes, createNote } from '@/app/actions'
 
 interface SidebarProps {
   selectedNoteId: string | null
@@ -18,12 +19,12 @@ export default function Sidebar({ selectedNoteId, onSelectNote, onNewNote }: Sid
 
   const fetchNotes = useCallback(async () => {
     if (!user) return
-    const { data } = await supabase
-      .from('notes')
-      .select('id, title, content, created_at, updated_at, user_id')
-      .eq('user_id', user.id)
-      .order('updated_at', { ascending: false })
-    if (data) setNotes(data as Note[])
+    try {
+      const data = await getNotes()
+      setNotes(data)
+    } catch (e) {
+      console.error(e)
+    }
   }, [user])
 
   useEffect(() => {
@@ -33,15 +34,14 @@ export default function Sidebar({ selectedNoteId, onSelectNote, onNewNote }: Sid
   const handleNewNote = async () => {
     if (!user || creating) return
     setCreating(true)
-    const { data, error } = await supabase
-      .from('notes')
-      .insert({ user_id: user.id, title: 'Untitled', content: '' })
-      .select()
-      .single()
-    setCreating(false)
-    if (!error && data) {
-      setNotes((prev) => [data as Note, ...prev])
-      onNewNote(data as Note)
+    try {
+      const newNote = await createNote()
+      setNotes((prev) => [newNote, ...prev])
+      onNewNote(newNote)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setCreating(false)
     }
   }
 

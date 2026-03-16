@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { supabase, type Note } from '@/lib/supabase'
+import { type Note } from '@/lib/supabase'
+import { getNote, updateNote, deleteNote } from '@/app/actions'
 
 interface EditorProps {
   noteId: string | null
@@ -28,11 +29,15 @@ export default function Editor({ noteId, onNoteUpdate, onNoteDelete, onTriggerLi
       return
     }
     const load = async () => {
-      const { data } = await supabase.from('notes').select('*').eq('id', noteId).single()
-      if (data) {
-        setNote(data as Note)
-        setTitle(data.title)
-        setContent(data.content)
+      try {
+        const data = await getNote(noteId)
+        if (data) {
+          setNote(data)
+          setTitle(data.title)
+          setContent(data.content)
+        }
+      } catch (e) {
+        console.error(e)
       }
     }
     load()
@@ -42,18 +47,18 @@ export default function Editor({ noteId, onNoteUpdate, onNoteDelete, onTriggerLi
     async (newTitle: string, newContent: string) => {
       if (!noteId) return
       setSaving(true)
-      const { data, error } = await supabase
-        .from('notes')
-        .update({ title: newTitle, content: newContent })
-        .eq('id', noteId)
-        .select()
-        .single()
-      setSaving(false)
-      if (!error && data) {
-        setNote(data as Note)
-        onNoteUpdate(data as Note)
-        setSaved(true)
-        setTimeout(() => setSaved(false), 2000)
+      try {
+        const data = await updateNote(noteId, newTitle, newContent)
+        if (data) {
+          setNote(data)
+          onNoteUpdate(data)
+          setSaved(true)
+          setTimeout(() => setSaved(false), 2000)
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setSaving(false)
       }
     },
     [noteId, onNoteUpdate]
@@ -78,8 +83,12 @@ export default function Editor({ noteId, onNoteUpdate, onNoteDelete, onTriggerLi
 
   const handleDelete = async () => {
     if (!noteId || !confirm('Delete this note? This cannot be undone.')) return
-    await supabase.from('notes').delete().eq('id', noteId)
-    onNoteDelete(noteId)
+    try {
+      await deleteNote(noteId)
+      onNoteDelete(noteId)
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   if (!noteId) {
