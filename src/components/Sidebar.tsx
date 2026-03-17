@@ -57,7 +57,7 @@ export default function Sidebar({ selectedNoteId, onSelectNote, onNewNote }: Sid
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-sm font-semibold text-white flex items-center gap-1.5">
-            🧠 <span>NeuralNotes</span>
+            🧠 <span>Neural Notes</span>
           </h1>
           <button
             onClick={handleNewNote}

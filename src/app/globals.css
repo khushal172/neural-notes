@@ -24,3 +24,71 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.5); /* indigo-500/50 */
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+/* React MD Editor Overrides */
+.custom-md-editor {
+  --color-canvas-default: transparent !important;
+  --color-border-default: transparent !important;
+  --color-border-muted: rgba(255, 255, 255, 0.1) !important;
+}
+
+.custom-md-editor .w-md-editor {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.custom-md-editor .w-md-editor-toolbar {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  padding: 8px 24px !important;
+}
+
+.custom-md-editor .wmde-markdown {
+  background-color: transparent !important;
+  font-family: inherit !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: #d1d5db !important; /* text-gray-300 */
+}
+
+/* Make textarea match */
+.custom-md-editor textarea.w-md-editor-text-input {
+  font-family: inherit !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  color: #d1d5db !important;
+  padding: 24px !important;
+}
+
+.custom-md-editor .w-md-editor-preview {
+  padding: 24px !important;
+}

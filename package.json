@@ -11,9 +11,12 @@
   "dependencies": {
     "@clerk/nextjs": "^7.0.4",
     "@supabase/supabase-js": "^2.99.2",
+    "@uiw/react-md-editor": "^4.0.11",
     "next": "16.1.6",
+    "next-remove-imports": "^1.0.13",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-markdown": "^10.1.0",
     "vis-network": "^10.0.2"
   },
   "devDependencies": {

@@ -52,32 +52,15 @@ export default function NotesPage() {
 
       {/* 2. Main Editor - Center Panel */}
       <div className="flex-1 flex flex-col relative bg-[#0a0e14]">
-        {/* Top bar with User Button and AI Status */}
-        <div className="absolute top-3 right-4 flex items-center gap-4 z-10 pointer-events-auto">
-          {isLinking && (
-            <span className="text-xs text-indigo-400 animate-pulse bg-indigo-500/10 px-2 py-1 rounded-full border border-indigo-500/20">
-              AI Analyzing...
-            </span>
-          )}
-          <button
-            onClick={() => setShowGraph(true)}
-            className="px-3 py-1.5 text-xs font-medium text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 rounded-full hover:bg-indigo-500/20 transition-colors flex items-center gap-1.5"
-            title="Open Graph View"
-          >
-            <span>🕸️</span> Graph
-          </button>
-          <UserButton
-            appearance={{
-              elements: { userButtonAvatarBox: 'w-8 h-8' }
-            }}
-          />
-        </div>
+
 
         <Editor
           noteId={selectedNoteId}
           onNoteUpdate={() => {}} // Sidebar auto-updates via query/realtime if we want, but local state works for now since Sidebar refetches on mount
           onNoteDelete={() => setSelectedNoteId(null)}
           onTriggerLink={handleTriggerLink}
+          isLinking={isLinking}
+          onShowGraph={() => setShowGraph(true)}
         />
       </div>
 

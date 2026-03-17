@@ -3,15 +3,23 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { type Note } from '@/lib/supabase'
 import { getNote, updateNote, deleteNote } from '@/app/actions'
+import { UserButton } from '@clerk/nextjs'
+import dynamic from 'next/dynamic'
+import '@uiw/react-md-editor/markdown-editor.css'
+import '@uiw/react-markdown-preview/markdown.css'
+
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
 interface EditorProps {
   noteId: string | null
   onNoteUpdate: (note: Note) => void
   onNoteDelete: (id: string) => void
   onTriggerLink: (noteId: string) => void
+  isLinking?: boolean
+  onShowGraph?: () => void
 }
 
-export default function Editor({ noteId, onNoteUpdate, onNoteDelete, onTriggerLink }: EditorProps) {
+export default function Editor({ noteId, onNoteUpdate, onNoteDelete, onTriggerLink, isLinking, onShowGraph }: EditorProps) {
   const [note, setNote] = useState<Note | null>(null)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
@@ -119,12 +127,33 @@ export default function Editor({ noteId, onNoteUpdate, onNoteDelete, onTriggerLi
             <span>Last updated {new Date(note.updated_at).toLocaleTimeString()}</span>
           )}
         </div>
-        <button
-          onClick={handleDelete}
-          className="text-xs text-gray-600 hover:text-red-400 transition-colors px-2 py-1 rounded hover:bg-red-500/10"
-        >
-          Delete note
-        </button>
+        <div className="flex items-center gap-3">
+          {isLinking && (
+            <span className="text-xs text-indigo-400 animate-pulse bg-indigo-500/10 px-2 py-1 rounded-full border border-indigo-500/20">
+              AI Analyzing...
+            </span>
+          )}
+          {onShowGraph && (
+            <button
+              onClick={onShowGraph}
+              className="px-3 py-1 text-xs font-medium text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 rounded-full hover:bg-indigo-500/20 transition-colors flex items-center gap-1.5"
+              title="Open Graph View"
+            >
+              <span>🕸️</span> Graph
+            </button>
+          )}
+          <button
+            onClick={handleDelete}
+            className="text-xs text-gray-600 hover:text-red-400 transition-colors px-2 py-1 rounded hover:bg-red-500/10"
+          >
+            Delete
+          </button>
+          <UserButton
+            appearance={{
+              elements: { userButtonAvatarBox: 'w-7 h-7 ml-1' }
+            }}
+          />
+        </div>
       </div>
 
       {/* Title */}
@@ -137,12 +166,20 @@ export default function Editor({ noteId, onNoteUpdate, onNoteDelete, onTriggerLi
       />
 
       {/* Content */}
-      <textarea
-        value={content}
-        placeholder="Start writing..."
-        onChange={(e) => handleChange(title, e.target.value)}
-        className="flex-1 px-6 pb-6 text-[15px] leading-relaxed text-gray-300 bg-transparent placeholder-gray-700 focus:outline-none resize-none w-full"
-      />
+      <div className="flex-1 overflow-hidden relative custom-md-editor pb-4" data-color-mode="dark">
+        <MDEditor
+          value={content}
+          onChange={(val) => handleChange(title, val || '')}
+          height="100%"
+          className="h-full border-none !bg-transparent"
+          preview="live"
+          hideToolbar={false}
+          visibleDragbar={false}
+          textareaProps={{
+            placeholder: 'Start writing markdown...'
+          }}
+        />
+      </div>
     </div>
   )
 }
