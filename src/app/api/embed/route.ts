@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: Request) {
   try {
     const { userId } = await auth()
@@ -29,17 +31,18 @@ export async function POST(req: Request) {
     const textToEmbed = `Title: ${note.title}\n\nContent: ${note.content}`
 
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'models/text-embedding-004',
+          model: 'models/gemini-embedding-001',
           content: {
             parts: [{ text: textToEmbed }],
           },
+          outputDimensionality: 768
         }),
       }
     )
@@ -57,7 +60,7 @@ export async function POST(req: Request) {
     const { error: upsertError } = await supabaseAdmin.from('embeddings').upsert({
       note_id: noteId,
       vector: vector,
-      model: 'text-embedding-004',
+      model: 'gemini-embedding-001',
       updated_at: new Date().toISOString(),
     })
 

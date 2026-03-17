@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: Request) {
   try {
     const { userId } = await auth()
@@ -43,7 +45,7 @@ Explanation:`
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
             temperature: 0.2, // Keep explanations factual and deterministic
-            maxOutputTokens: 100,
+            maxOutputTokens: 400, // Gemini 2.5 uses "thinking" tokens, so we need a higher limit
           },
         }),
       }

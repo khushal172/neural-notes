@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { supabase, type NoteLink } from '@/lib/supabase'
+import { type NoteLink } from '@/lib/supabase'
+import { getNoteLinks, getNote } from '@/app/actions'
 
 interface LinksPanelProps {
   noteId: string | null
@@ -23,18 +24,7 @@ export default function LinksPanel({ noteId, onSelectNote }: LinksPanelProps) {
     setLoading(true)
 
     // Fetch links where this note is either the source or target
-    // We do two queries because Supabase JS client doesn't easily support OR with joined tables in a single flat query
-    const { data: sourceLinks } = await supabase
-      .from('note_links')
-      .select('*, target:notes!target_id(title, content)')
-      .eq('source_id', noteId)
-      .order('score', { ascending: false })
-
-    const { data: targetLinks } = await supabase
-      .from('note_links')
-      .select('*, source:notes!source_id(title, content)')
-      .eq('target_id', noteId)
-      .order('score', { ascending: false })
+    const { sourceLinks, targetLinks } = await getNoteLinks(noteId)
 
     const allLinks: LinkWithTarget[] = []
 
@@ -89,7 +79,7 @@ export default function LinksPanel({ noteId, onSelectNote }: LinksPanelProps) {
 
     try {
       // 1. Get current note
-      const { data: currentNote } = await supabase.from('notes').select('title, content').eq('id', noteId).single()
+      const currentNote = await getNote(noteId)
       if (!currentNote) return
 
       // 2. Call our AI explanation API

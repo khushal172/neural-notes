@@ -78,3 +78,54 @@ export async function deleteNote(id: string) {
   if (error) throw error
   return true
 }
+
+export async function getGraphData() {
+  const { userId } = await auth()
+  if (!userId) throw new Error('Unauthorized')
+
+  const { data: notes, error: notesError } = await supabaseAdmin
+    .from('notes')
+    .select('id, title')
+    .eq('user_id', userId)
+
+  if (notesError) throw notesError
+
+  const noteIds = notes.map(n => n.id)
+  
+  if (noteIds.length === 0) {
+    return { notes: [], links: [] }
+  }
+
+  const { data: links, error: linksError } = await supabaseAdmin
+    .from('note_links')
+    .select('source_id, target_id, score')
+    .in('source_id', noteIds)
+
+  if (linksError) throw linksError
+
+  return { notes, links }
+}
+
+export async function getNoteLinks(noteId: string) {
+  const { userId } = await auth()
+  if (!userId) throw new Error('Unauthorized')
+
+  // Verify ownership of the note
+  const { data: note } = await supabaseAdmin.from('notes').select('id').eq('id', noteId).eq('user_id', userId).single()
+  if (!note) return { sourceLinks: [], targetLinks: [] }
+
+  const { data: sourceLinks } = await supabaseAdmin
+    .from('note_links')
+    .select('*, target:notes!target_id(title, content)')
+    .eq('source_id', noteId)
+
+  const { data: targetLinks } = await supabaseAdmin
+    .from('note_links')
+    .select('*, source:notes!source_id(title, content)')
+    .eq('target_id', noteId)
+
+  return { 
+    sourceLinks: sourceLinks || [], 
+    targetLinks: targetLinks || [] 
+  }
+}

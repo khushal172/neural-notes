@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Network } from 'vis-network'
-import { supabase, type Note, type NoteLink } from '@/lib/supabase'
+import { getGraphData } from '@/app/actions'
 
 interface GraphViewProps {
   onSelectNote: (noteId: string) => void
@@ -18,13 +18,8 @@ export default function GraphView({ onSelectNote, onClose }: GraphViewProps) {
     let active = true
 
     const loadGraph = async () => {
-      // 1. Fetch all notes for nodes
-      const { data: notes } = await supabase.from('notes').select('id, title')
-      if (!notes) return
-
-      // 2. Fetch all links for edges
-      const { data: links } = await supabase.from('note_links').select('source_id, target_id, score')
-      if (!links) return
+      const { notes, links } = await getGraphData()
+      if (!notes || !links) return
 
       if (!active || !containerRef.current) return
 

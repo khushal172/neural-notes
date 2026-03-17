@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { findTopSimilar } from '@/lib/vectors'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: Request) {
   try {
     const { userId } = await auth()
@@ -60,7 +62,7 @@ export async function POST(req: Request) {
       : targetEmbedding.vector
 
     // 4. Calculate similarity locally (faster than repeatedly doing pgvector similarity search across tiny vaults, though pgvector could do this directly in SQL)
-    const threshold = 0.70 // Minimum confidence score
+    const threshold = 0.60 // Minimum confidence score lowered to ensure semantic connections happen more frequently
     const topMatches = findTopSimilar(targetVector, candidates, threshold, 5)
 
     if (topMatches.length === 0) {
