@@ -58,6 +58,8 @@ create table if not exists note_links (
   score         float not null check (score >= 0 and score <= 1),  -- cosine similarity
   explanation   text,                  -- AI-generated explanation (may be null until fetched)
   created_at    timestamptz not null default now(),
+  is_manual     boolean not null default false, -- Track if user explicitly created this connection
+  is_ignored    boolean not null default false, -- Track if user dismissed an AI recommendation
   unique(source_id, target_id)
 );
 

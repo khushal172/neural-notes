@@ -30,4 +30,6 @@ export type NoteLink = {
   score: number
   explanation: string | null
   created_at: string
+  is_manual: boolean
+  is_ignored: boolean
 }
