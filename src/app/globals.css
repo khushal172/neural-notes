@@ -59,6 +59,7 @@ body {
   --color-canvas-default: transparent !important;
   --color-border-default: transparent !important;
   --color-border-muted: rgba(255, 255, 255, 0.1) !important;
+  --color-fg-default: #d1d5db !important; /* text-gray-300 */
 }
 
 .custom-md-editor .w-md-editor {
@@ -72,23 +73,8 @@ body {
   padding: 8px 24px !important;
 }
 
-.custom-md-editor .wmde-markdown {
-  background-color: transparent !important;
-  font-family: inherit !important;
-  font-size: 15px !important;
-  line-height: 1.6 !important;
-  color: #d1d5db !important; /* text-gray-300 */
-}
-
-/* Make textarea match */
-.custom-md-editor textarea.w-md-editor-text-input {
-  font-family: inherit !important;
-  font-size: 15px !important;
-  line-height: 1.6 !important;
-  color: #d1d5db !important;
-  padding: 24px !important;
-}
-
-.custom-md-editor .w-md-editor-preview {
-  padding: 24px !important;
+/* Hide the fullscreen toggle button */
+.custom-md-editor .w-md-editor-toolbar li button[data-name="fullscreen"],
+.custom-md-editor .w-md-editor-toolbar li[data-name="fullscreen"] {
+  display: none !important;
 }

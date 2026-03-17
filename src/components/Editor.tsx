@@ -101,10 +101,31 @@ export default function Editor({ noteId, onNoteUpdate, onNoteDelete, onTriggerLi
 
   if (!noteId) {
     return (
-      <div className="flex-1 flex items-center justify-center text-gray-700">
-        <div className="text-center">
-          <p className="text-4xl mb-3">🧠</p>
-          <p className="text-sm">Select a note or create a new one</p>
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        {/* Toolbar for empty state */}
+        <div className="flex items-center justify-end px-6 py-3 border-b border-white/10 shrink-0">
+          <div className="flex items-center gap-3">
+            {onShowGraph && (
+              <button
+                onClick={onShowGraph}
+                className="px-3 py-1 text-xs font-medium text-indigo-300 bg-indigo-500/10 border border-indigo-500/30 rounded-full hover:bg-indigo-500/20 transition-colors flex items-center gap-1.5"
+                title="Open Graph View"
+              >
+                <span>🕸️</span> Graph
+              </button>
+            )}
+            <UserButton
+              appearance={{
+                elements: { userButtonAvatarBox: 'w-7 h-7 ml-1' }
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex-1 flex items-center justify-center text-gray-700">
+          <div className="text-center">
+            <p className="text-4xl mb-3">🧠</p>
+            <p className="text-sm">Select a note or create a new one</p>
+          </div>
         </div>
       </div>
     )
